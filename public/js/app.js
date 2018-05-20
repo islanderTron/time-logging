@@ -22,6 +22,17 @@ class TimersDashboard extends React.Component {
         ],
     };
 
+    handleCreateFormSubmit = (timer) => {
+        this.createTimer(timer);
+    };
+
+    createTimer = (timer) => {
+        const t = helpers.newTimer(timer);
+        this.setState({
+            timers: this.state.timers.concat(t),
+        });
+    };
+
     render() {
         return (
             <div className='ui three column centered grid'>
@@ -29,7 +40,9 @@ class TimersDashboard extends React.Component {
                     <EditableTimerList
                         timers={this.state.timers}
                     />
-                    <ToggleableTimerForm />
+                    <ToggleableTimerForm 
+                        onFormSubmit={this.handleCreateFormSubmit}
+                    />
                 </div>
             </div>
         );
@@ -45,10 +58,22 @@ class ToggleableTimerForm extends React.Component {
     handleFormOpen = () => {
         this.setState({isOpen: true});
     };
+
+    handleFormClose = () => {
+        this.setState({isOpen:false});
+    };
+
+    handleSubmit = (timer) => {
+        this.props.onFormSubmit(timer);
+        this.setState({isOpen:false});
+    };
+
     render() {
         if(this.state.isOpen) {
             return (
-                <TimerForm />
+                <TimerForm
+                    onFormSubmit={this.handleSubmit} 
+                    onFormClose={this.handleFormClose} />
             );
         } else { 
             return( 
@@ -121,25 +146,25 @@ class Timer extends React.Component {
         return (
         <div className='ui centered card'>
             <div className='content'>
-            <div className='header'>
-                {this.props.title}
-            </div>
-            <div className='meta'>
-                {this.props.project}
-            </div>
-            <div className='center aligned description'>
-                <h2>
-                {elapsedString}
-                </h2>
-            </div>
-            <div className='extra content'>
-                <span className='right floated edit icon'>
-                <i className='edit icon' />
-                </span>
-                <span className='right floated trash icon'>
-                <i className='trash icon' />
-                </span>
-            </div>
+                <div className='header'>
+                    {this.props.title}
+                </div>
+                <div className='meta'>
+                    {this.props.project}
+                </div>
+                <div className='center aligned description'>
+                    <h2>
+                    {elapsedString}
+                    </h2>
+                </div>
+                <div className='extra content'>
+                    <span className='right floated edit icon'>
+                    <i className='edit icon' />
+                    </span>
+                    <span className='right floated trash icon'>
+                    <i className='trash icon' />
+                    </span>
+                </div>
             </div>
             <div className='ui bottom attached blue basic button'>
             Start
@@ -162,8 +187,16 @@ class TimerForm extends React.Component {
     handleProjectChange = (e) => {
         this.setState({project: e.target.value})
     }
+    handleSubmit = () => {
+        this.props.onFormSubmit({
+            id:this.props.id,
+            title: this.props.title,
+            project: this.props.project
+        });
+    };
+
     render() {
-        const submitText = this.props.title ? 'Update' : 'Create';
+        const submitText = this.props.id ? 'Update' : 'Create';
         return (
         <div className='ui centered card'>
             <div className='content'>
@@ -184,10 +217,12 @@ class TimerForm extends React.Component {
                 />
                 </div>
                 <div className='ui two bottom attached buttons'>
-                <button className='ui basic blue button'>
+                <button className='ui basic blue button'
+                        onClick={this.handleSubmit}>
                     {submitText}
                 </button>
-                <button className='ui basic red button'>
+                <button className='ui basic red button'
+                        onClick={this.onFormClose}>
                     Cancel
                 </button>
                 </div>
