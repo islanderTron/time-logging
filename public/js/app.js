@@ -26,6 +26,10 @@ class TimersDashboard extends React.Component {
         this.createTimer(timer);
     };
 
+    handleEditFormSubmit = (attrs) => {
+        this.updateTimer(attrs);
+    };
+
     createTimer = (timer) => {
         const t = helpers.newTimer(timer);
         this.setState({
@@ -151,34 +155,36 @@ class EditableTimer extends React.Component {
     };
 
     closeForm = () => {
-        this.setState({editFormOpen:false});
+        this.setState({ editFormOpen:false });
     };
 
     openForm = () => {
-        this.setState({editFormOpen: true});
+        this.setState({ editFormOpen: true });
     };
 
     render() {
         // Use the prop editFormOpen
-        if (this.props.editFormOpen) {
+        // If editFormOpen is true, move to TimeForm to create/update form
+        if (this.state.editFormOpen) {
             return (
                 <TimerForm
-                id={this.props.id}
-                title={this.props.title}
-                project={this.props.project}
-                onFormSubmit={this.handleSubmit}
-                onFormClose={this.handleFormClose}
+                    id={this.props.id}
+                    title={this.props.title}
+                    project={this.props.project}
+                    onFormSubmit={this.handleSubmit}
+                    onFormClose={this.handleFormClose}
                 />
             );
+        // If editFormOpen is false, move to Timer
         } else {
             return (
                 <Timer
-                id={this.props.id}
-                title={this.props.title}
-                project={this.props.project}
-                elapsed={this.props.elapsed}
-                runningSince={this.props.runningSince}
-                onEditClick={this.handleEditClick}
+                    id={this.props.id}
+                    title={this.props.title}
+                    project={this.props.project}
+                    elapsed={this.props.elapsed}
+                    runningSince={this.props.runningSince}
+                    onEditClick={this.handleEditClick}
                 />
             );
         }
@@ -189,7 +195,7 @@ class EditableTimer extends React.Component {
 class Timer extends React.Component {
     render() {
         const elapsedString = helpers.renderElapsedString(this.props.elapsed);
-        
+
         return (
         <div className='ui centered card'>
             <div className='content'>
@@ -206,7 +212,8 @@ class Timer extends React.Component {
                 </div>
                 <div className='extra content'>
                     <span className='right floated edit icon'
-                          onClick={this.props.onEditClick} >
+                          onClick={this.props.onEditClick} 
+                    >
                     <i className='edit icon' />
                     </span>
                     <span className='right floated trash icon'>
@@ -270,7 +277,7 @@ class TimerForm extends React.Component {
                     {submitText}
                 </button>
                 <button className='ui basic red button'
-                        onClick={this.onFormClose}>
+                        onClick={this.props.onFormClose}>
                     Cancel
                 </button>
                 </div>
